@@ -1,6 +1,6 @@
 import pyautogui
 from time import sleep
-from button_positions import HOME_PLAY_BUTTON, MAP_DIFFICULTYS, DIFFICULTYS, MODES, OVERWRITE_SAVE
+from recalc import HOME_PLAY_BUTTON, MAP_DIFFICULTYS, DIFFICULTYS, MODES, OVERWRITE_SAVE
 from logger import Logger
 from monkeys import monkeys, upgrades
 from threading import Thread

@@ -27,6 +27,8 @@ If you run into issues try instead of `start.bat`:
 
 - `python main.py`
 
+After starting the bot you have 5 seconds to go to the home screen of btd. 
+
 ---
 
 ## Stop
@@ -35,3 +37,7 @@ Stopping this bot can be done in 2 ways:
 
 - Move your mouse to a corner of the screen. This should activate the failsafe of `pyautogui`
 - `Ctrl + C` in the commandline window
+
+---
+
+# If you want to create own maps
