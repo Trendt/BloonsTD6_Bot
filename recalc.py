@@ -3,7 +3,7 @@ from time import sleep
 import pyautogui
 from button_positions import *
 
-my_res = (2560,1440)
+my_res = (2560, 1440)
 target_res = tuple(pyautogui.size())
 # target_res = (1920, 1080)
 

@@ -11,10 +11,10 @@ Logger = logger.Logger()
 t1 = None
 src_path = "./data/src/menu"
 data_handler = Handler("./data/maps")
-map_data = data_handler.read_data("dark_castle.txt")
-game_plan = map_data[6:]
+map_data = data_handler.read_data("dark_castle2.txt")
+game_plan = map_data[7:]
 
-game_map = Map(map_data[0], MAP_DIFFICULTYS[int(map_data[1])-1], int(map_data[2]), MAPS[int(map_data[3])-1], DIFFICULTYS[int(map_data[4])], MODES[int(map_data[5])])
+game_map = Map(map_data[0], MAP_DIFFICULTYS[int(map_data[1])-1], int(map_data[2]), MAPS[int(map_data[3])-1], DIFFICULTYS[int(map_data[4])], MODES[int(map_data[5])], tuple([int(x) for x in map_data[6].split()])) # maybe last value broken
 completed_rounds = 0
 
 def check_win():
@@ -37,6 +37,9 @@ def check_level_up():
             Logger.log("Level Up", "RED")
             pyautogui.click()
             pyautogui.click()
+            time.sleep(0.5)
+            pyautogui.press("SPACE")
+            pyautogui.press("SPACE")
 
 def check_collect():
     collect = pyautogui.pixel(COLLECT_BUTTON[0], COLLECT_BUTTON[1])

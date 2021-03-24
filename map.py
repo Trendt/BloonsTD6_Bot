@@ -2,20 +2,22 @@ import pyautogui
 from time import sleep
 from recalc import HOME_PLAY_BUTTON, MAP_DIFFICULTYS, DIFFICULTYS, MODES, OVERWRITE_SAVE
 from logger import Logger
-from monkeys import monkeys, upgrades
+from monkeys import monkeys, upgrades, SELL, CHANGE_TARGETING, CHANGE_TARGETING_REVERSE, PLAY
 from threading import Thread
+from recalc import recalc, my_res, target_res
 
 
 Logger = Logger()
 
 class Map():
-    def __init__(self, map_name, map_difficulty, map_site, map_place, difficulty, mode):
+    def __init__(self, map_name, map_difficulty, map_site, map_place, difficulty, mode, res):
         self.map_name = map_name
         self.map_difficulty = map_difficulty
         self.map_site = map_site
         self.map_place = map_place
         self.difficulty = difficulty
         self.mode = mode
+        self.res = res
 
     def select(self):
         time_to_home = 5
@@ -45,7 +47,7 @@ class Map():
 
     
 
-    def place_monkey(self, key:str, pos:tuple, time_between:int=0.2):
+    def place_monkey(self, key:str, pos:tuple, time_between:int=0.2): # time between maybe to 0?
         pyautogui.press(key)
         pyautogui.moveTo(pos[0], pos[1])
         sleep(time_between)
@@ -57,11 +59,24 @@ class Map():
         pyautogui.press(upgrades[path])
         pyautogui.press("ESC")
 
+    def sell_monkey(self, pos:tuple):
+        pyautogui.moveTo(pos[0], pos[1])
+        pyautogui.click()
+        pyautogui.press(SELL)
+
+    def change_target(self, pos:tuple, direction:int):
+        pyautogui.moveTo(pos[0], pos[1])
+        pyautogui.click()
+        if direction == 1:
+            pyautogui.press(CHANGE_TARGETING)
+        else:
+            pyautogui.hotkey(CHANGE_TARGETING_REVERSE[0], CHANGE_TARGETING_REVERSE[1])
+        pyautogui.press("ESC")
+
     def play(self, game_plan):
         data = []
         for r in game_plan:
             data.append(r.split())
-        
         
         for r in data:
             key = r[0].upper()
@@ -69,12 +84,26 @@ class Map():
                 Logger.log(f"Waiting for {r[1]} seconds", "GREEN")
                 sleep(float(r[1]))
 
+            elif key == "#":
+                pass
+
             elif key == "UPGRADE":
-                self.upgrade_monkey((int(r[1]), int(r[2])), r[3])
-                Logger.log(f"Upgraded monkey at x:{r[1]} y:{r[2]} with path:{r[3]}", "GREEN")
+                pos = recalc(self.res, target_res, (int(r[1]), int(r[2])))
+                self.upgrade_monkey((int(pos[0]), int(pos[1])), r[3])
+                Logger.log(f"Upgraded monkey at x:{pos[0]} y:{pos[1]} with path:{r[3]}", "GREEN")
+
+            elif key == "SELL":
+                pos = recalc(self.res, target_res, (int(r[1]), int(r[2])))
+                self.sell_monkey((int(pos[0], int(pos[1]))))
+                Logger.log(f"Sold monkey at x:{pos[0]} y:{pos[1]}")
+
+            elif key == "TARGETING":
+                pos = recalc(self.res, target_res, (int(r[1]), int(r[2])))
+                self.change_target(pos, int(r[3]))
+                Logger.log(f"Changed targeting x:{pos[0]} y:{pos[1]} ") #mode:{"reverse" if int(r[3]) == -1 else "normal"}
 
             elif key == "SPACE":
-                pyautogui.press("SPACE")
+                pyautogui.press(PLAY)
                 Logger.log(f"Used space", "GREEN")
 
             elif key == "ABILITY":
@@ -82,5 +111,6 @@ class Map():
                 Logger.log(f"Used ability {r[1]}", "GREEN")
 
             else:
-                self.place_monkey(monkeys[r[0].upper()],(int(r[1]),int(r[2])))
-                Logger.log(f"Placed {r[0]} at position x:{r[1]} y:{r[2]}", "GREEN")
+                pos = recalc(self.res, target_res, (int(r[1]), int(r[2])))
+                self.place_monkey(monkeys[r[0].upper()],(int(pos[0]),int(pos[1])))
+                Logger.log(f"Placed {r[0]} at position x:{pos[0]} y:{pos[1]}", "GREEN")
