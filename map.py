@@ -1,6 +1,7 @@
 import pyautogui
 from time import sleep
 from recalc import HOME_PLAY_BUTTON, MAP_DIFFICULTYS, DIFFICULTYS, MODES, OVERWRITE_SAVE
+from button_positions import *
 from logger import Logger
 from monkeys import monkeys, upgrades, SELL, CHANGE_TARGETING, CHANGE_TARGETING_REVERSE, PLAY
 from threading import Thread
@@ -45,7 +46,22 @@ class Map():
         sleep(delay)
         pyautogui.click(OVERWRITE_SAVE)
 
-    
+    def restart_map(self):
+        Logger.log(f"Run again", "YELLOW")
+        pyautogui.click(FREE_PLAY)
+        sleep(1)
+        pyautogui.click(FREE_PLAY_OK)
+        sleep(1)
+
+        pyautogui.press("ESC")
+        sleep(0.2)
+        pyautogui.click(RESTART_GAME)
+        
+        sleep(0.2)
+        pyautogui.click(RESTART_SUBMIT)
+        
+        sleep(3)
+        self.play(game_plan)
 
     def place_monkey(self, key:str, pos:tuple, time_between:int=0.2): # time between maybe to 0?
         pyautogui.press(key)

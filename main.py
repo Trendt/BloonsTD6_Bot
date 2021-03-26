@@ -6,12 +6,14 @@ import time
 from threading import Thread
 import logger
 
+MODE = "SINGLE_MAP"
+
 Logger = logger.Logger()
 
 t1 = None
 src_path = "./data/src/menu"
 data_handler = Handler("./data/maps")
-map_data = data_handler.read_data("dark_castle2.txt")
+map_data = data_handler.read_data("dark_castle.txt")
 game_plan = map_data[7:]
 
 game_map = Map(map_data[0], MAP_DIFFICULTYS[int(map_data[1])-1], int(map_data[2]), MAPS[int(map_data[3])-1], DIFFICULTYS[int(map_data[4])], MODES[int(map_data[5])], tuple([int(x) for x in map_data[6].split()])) # maybe last value broken
@@ -23,11 +25,28 @@ def check_win():
         locate = pyautogui.pixel(WIN_COORDINATE[0],WIN_COORDINATE[1])
         if locate == (65, 65, 65):
             win == True
-            Logger.log("Win")
             pyautogui.click(NEXT)
             time.sleep(0.5)
             restart()
         time.sleep(1)
+
+def restart_map():
+        Logger.log(f"Run again", "YELLOW")
+        pyautogui.click(FREE_PLAY)
+        time.sleep(1)
+        pyautogui.click(FREE_PLAY_OK)
+        time.sleep(1)
+
+        pyautogui.press("ESC")
+        time.sleep(0.2)
+        pyautogui.click(RESTART_GAME)
+        
+        time.sleep(0.2)
+        pyautogui.click(RESTART_SUBMIT)
+        
+        time.sleep(3)
+        game_plan.play(game_plan)
+        check_win()
 
 def check_level_up():
     while True:
@@ -39,37 +58,46 @@ def check_level_up():
             pyautogui.click()
             time.sleep(0.5)
             pyautogui.press("SPACE")
-            pyautogui.press("SPACE")
 
 def check_collect():
     collect = pyautogui.pixel(COLLECT_BUTTON[0], COLLECT_BUTTON[1])
     if collect == (104, 229, 0):
         pyautogui.click(COLLECT_BUTTON)
-        time.sleep(2)
+        time.sleep(3)
 
         pyautogui.click(COLLECT_LEFT)
-        time.sleep(0.2)
+        time.sleep(1)
         pyautogui.click()
+        time.sleep(0.2)
 
+        time.sleep(1)
         pyautogui.click(COLLECT_RIGHT)
-        time.sleep(0.2)
+        time.sleep(1)
         pyautogui.click()
+        time.sleep(0.2)
 
-        time.sleep(0.5)
+        time.sleep(1)
         pyautogui.click(COLLECT_CONTINUE)
 
         time.sleep(0.2)
         pyautogui.press("ESC")
 
-
+def run_map_again():
+    global completed_rounds
+    completed_rounds += 1
+    Logger.log(f"Rounds completed: {completed_rounds} Cash generated: {completed_rounds*60}", "RED")
+    
 def restart():
     global completed_rounds
     completed_rounds += 1
     Logger.log(f"Rounds completed: {completed_rounds} Cash generated: {completed_rounds*60}", "RED")
-    pyautogui.click(BACK_TO_HOME)
-    time.sleep(5)
-    check_collect()
-    main_loop()
+    if MODE == "SINGLE_MAP":
+        restart_map()
+    else:
+        pyautogui.click(BACK_TO_HOME)
+        time.sleep(1)
+        check_collect()
+        main_loop()
 
 def main_loop():
     game_map.select()    
@@ -81,3 +109,4 @@ def main_loop():
 level_check_thread = Thread(target=check_level_up, daemon=True)
 level_check_thread.start()
 main_loop()
+
