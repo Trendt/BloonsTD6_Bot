@@ -45,7 +45,7 @@ def restart_map():
         pyautogui.click(RESTART_SUBMIT)
         
         time.sleep(3)
-        game_plan.play(game_plan)
+        game_map.play(game_plan)
         check_win()
 
 def check_level_up():
